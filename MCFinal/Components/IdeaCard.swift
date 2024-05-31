@@ -27,7 +27,7 @@ struct IdeaCard: View {
                         .cornerRadius(50)
                         .padding(.trailing,10)
                     VStack(alignment:.leading){
-                        Text(idea.author)
+                        Text(idea.name)
                             .bold()
                             .font(.title2)
                         Text("@mrzprz")
