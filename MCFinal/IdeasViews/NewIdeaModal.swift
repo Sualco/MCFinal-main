@@ -11,7 +11,7 @@ import SwiftData
 
 
 struct NewIdeaModal: View {
-   // @Environment(\.modelContext) var modelContext
+    @Environment(Controller.self) private var controller
     @Environment(\.dismiss) var dismiss
     @State var title = ""
     @State var summary = ""
@@ -50,7 +50,7 @@ struct NewIdeaModal: View {
                     TextField("Tags", text: $input)
                     
                         .onChange(of: input, {
-                            filtered = suggestions.filter { $0.lowercased().contains(input.lowercased()) }
+                            filtered = controller.tags.filter { $0.lowercased().contains(input.lowercased()) }
 
                             if(filtered.isEmpty){
                                 popoverOn=false
@@ -59,13 +59,17 @@ struct NewIdeaModal: View {
                             }
                         })
                         .onSubmit {
+                            
+                            
                             if(filtered.isEmpty){
-                                suggestions.append(input)
+                                controller.tags.append(input)
                             }
                             
                             if(!tagss.contains(input)){
                                 tagss.append(input)
                             }
+                            
+                            input=""
                             
                             
                         }
@@ -73,30 +77,41 @@ struct NewIdeaModal: View {
                         .popover(isPresented: $popoverOn,
                                  attachmentAnchor: .point(.center),
                                  content: {
-                            HStack {
-                                ForEach(filtered, id: \.self) {suggestion in
-                                    Button(action: {
-                                        input=suggestion
-                                        popoverOn=false
-                                    }, label: {
-                                        Text(suggestion)
-                                    })
-                                    
-                                }
+                            ScrollView (.horizontal){
+                                HStack {
+                                    ForEach(filtered.sorted(), id: \.self) {suggestion in
+                                        
+                                        let cnt: Int = filtered.count
+                                        
+                                        Button(action: {
+                                            tagss.append(suggestion)
+    //                                        input=suggestion
+                                            input=""
+                                            popoverOn=false
+                                        }, label: {
+                                            Text("\(suggestion)")
+                                               
+                                        })
+                                        .containerRelativeFrame(.horizontal, count: cnt <= 4 ? cnt : 4, spacing: 1)
+                                        
+                                    }
+                                }.padding(.vertical)
+                                .presentationCompactAdaptation((.popover))
                             }
-                            .presentationCompactAdaptation((.popover))
                     })
                 }
                 
                 if(!tagss.isEmpty){
                     Section{
-                        HStack{
-                            ForEach(tagss, id:\.self){tag in
-                                Text(tag)
-                                    .bold()
-                                    .padding(10)
-                                    .background(.myGray)
-                                    .cornerRadius(10)
+                        ScrollView(.horizontal) {
+                            HStack{
+                                ForEach(tagss, id:\.self){tag in
+                                    Text(tag)
+                                        .bold()
+                                        .padding(10)
+                                        .background(.myGray)
+                                        .cornerRadius(10)
+                                }
                             }
                         }
                     }
@@ -105,9 +120,9 @@ struct NewIdeaModal: View {
             }
             .toolbar{
                 Button(action: {
-                    
-//                    let idea = Idea(name: title, text: summary, lookingFor: role, tags: tagss, isOpen: true)
-//                    modelContext.insert(idea)
+                    let idea = Idea(name: title, text: summary, lookingFor: role, tags: tagss, isOpen: true)
+                    controller.addIdea(idea: idea)
+                    controller.getIdeas()
                     dismiss()
                     
                     

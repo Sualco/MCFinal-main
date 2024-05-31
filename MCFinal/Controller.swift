@@ -207,5 +207,20 @@ import Firebase
         })
     }
     
+    func addIdea(idea: Idea){
+        let db = Firestore.firestore()
+        let ref = db.collection("Ideas").document(idea.id)
+        ref.setData(["author": idea.author, "id": idea.id, "isOpen": idea.isOpen, "lookingFor": idea.lookingFor, "text": idea.text, "tags": idea.tags, "name": idea.name]){error in
+            print(error?.localizedDescription ?? "")
+        }
+    }
+    
+    func addProject(project: Project){
+        let db = Firestore.firestore()
+        let ref = db.collection("Projects").document(project.id)
+        ref.setData(["author": project.author, "creation": project.creation, "id": project.id, "link": project.link, "summary": project.summary, "tags": project.tags, "name": project.name]){error in
+            print(error?.localizedDescription ?? "")
+        }
+    }
     
 }

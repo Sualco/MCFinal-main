@@ -25,8 +25,6 @@ struct NewProjectModal: View {
     
     @Environment(Controller.self) private var controller
     
-//    @State private var suggestions = ["unity", "swift", "machine learning", "swift data", "swift data", "swift data", "swift data", "swift data", ]
-    
     @State var tagss: [String] = []
     
     var body: some View {
@@ -154,8 +152,9 @@ struct NewProjectModal: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-//                        let project = Project(name: title, summary: summary, photos: photos.map { $0.pngData()! }, tags: tagss)
-//                        modelContext.insert(project)
+                        let project = Project(name: title, summary: summary, tags: tagss, link: link)
+                        controller.addProject(project: project)
+                        controller.getProjects()
                         dismiss()
                     }) {
                         Image(systemName: "checkmark")
